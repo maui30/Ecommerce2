@@ -88,9 +88,7 @@ app.post('/login', (req, res) => {
         res.json({'alert' : 'fill all the inputs'});
     }
 
-    const users = collection(db, "users");
-
-    getDoc(doc(users, email))
+    db.collection('users').doc(email).get()
     .then(user => {
         if(!user.exists){
             return res.json({'alert' : 'email does not exists'});
@@ -109,6 +107,32 @@ app.post('/login', (req, res) => {
             })
         }
     })
+})
+
+// seller route
+app.get('/seller',(req,res)=>{
+    res.sendFile(path.join(staticPath,"seller.html"));
+})
+
+app.post('/seller', (req,res)=>{
+    let{name,about,address,number,tac,legit,email}=req.body;
+
+    if(!name.length ||!address.length || !about.length || number.length < 10 || !Number(number)){
+        return res.json({'alert':'some inforamation(s)is/are invalid'});
+    }else if(!tac ||!legit){
+        return res.json({'alert':'you must agree to our terms and conditions'})
+    }else{
+        // update users seller status here.
+        db.collection('sellers').doc(email).set(req.body)
+        .then(data=>{
+            db.collection('users').doc(email).update({
+                seller:true
+            }).then(data=>{
+                res.json(true);
+            })
+        })
+               
+    }
 })
 
 // 404 route
