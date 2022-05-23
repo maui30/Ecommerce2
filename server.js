@@ -92,7 +92,7 @@ app.post('/login', (req, res) => {
 
     getDoc(doc(users, email))
     .then(user => {
-        if(!user.exists()){
+        if(!user.exists){
             return res.json({'alert' : 'email does not exists'});
         }else{
             bcrypt.compare(password, user.data().password, (err, result) => {
